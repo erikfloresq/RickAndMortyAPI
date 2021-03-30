@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ResponseAPI<T: Codable>: Codable {
-    let info: ResponseInfo
-    let results: [T]
+public struct ResponseAPI<T: Codable>: Codable {
+    public let info: ResponseInfo
+    public let results: [T]
 }

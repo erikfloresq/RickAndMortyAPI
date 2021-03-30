@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct Episode: Codable {
-    let id: Int
-    let name: String
-    let airDate: String
-    let episode: String
-    let characters: [String]
-    let url: String
-    let created: String
+public struct Episode: Codable, Identifiable {
+    public let id: Int
+    public let name: String
+    public let airDate: String
+    public let episode: String
+    public let characters: [String]
+    public let url: String
+    public let created: String
     
     enum CodingKeys: String, CodingKey {
         case id, name, episode, characters, url, created

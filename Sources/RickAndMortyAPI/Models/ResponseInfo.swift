@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct ResponseInfo: Codable {
-    let count: Int
-    let pages: Int
-    let next: String
-    let prev: String?
+public struct ResponseInfo: Codable {
+    public let count: Int
+    public let pages: Int
+    public let next: String
+    public let prev: String?
 }

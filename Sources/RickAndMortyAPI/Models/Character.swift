@@ -7,27 +7,27 @@
 
 import Foundation
 
-struct Character: Codable {
-    struct Origin: Codable {
-        let name: String
-        let url: String
+public struct Character: Codable, Identifiable {
+    public struct Origin: Codable {
+        public let name: String
+        public let url: String
     }
     
-    struct Location: Codable {
-        let name: String
-        let url: String
+    public struct Location: Codable {
+        public let name: String
+        public let url: String
     }
     
-    let id: Int
-    let name: String
-    let status: String
-    let species: String
-    let type: String
-    let gender: String
-    let origin: Origin
-    let location: Location
-    let image: String
-    let episode: [String]
-    let url: String
-    let created: String
+    public let id: Int
+    public let name: String
+    public let status: String
+    public let species: String
+    public let type: String
+    public let gender: String
+    public let origin: Origin
+    public let location: Location
+    public let image: String
+    public let episode: [String]
+    public let url: String
+    public let created: String
 }
