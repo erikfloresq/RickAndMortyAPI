@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 
-@available(OSX 10.15, iOS 13.0, *)
 struct Networking {
     private let urlSession = URLSession.shared
 

@@ -1,7 +1,6 @@
 import Foundation
 import Combine
 
-@available(OSX 10.15, iOS 13.0, *)
 /// Provide characters, locations and episodes of RickAndMortyAPI
 public struct RickAndMortyAPI {
     private let networking = Networking()
