@@ -7,14 +7,16 @@
 
 import XCTest
 import Combine
+import Foundation
 @testable import RickAndMortyAPI
 
 final class CharacterTests: XCTestCase {
     let rickAndMortyApi = RickAndMortyAPI()
+    let rickAndMortyApiMock = RickAndMortyAPIMock()
 
     func testCharacters() {
         let expectation = XCTestExpectation(description: "Character result")
-        let characters = rickAndMortyApi
+        let characters = rickAndMortyApiMock
             .getCharacter()
             .map { $0.results }
             .sink { completion in
