@@ -1,12 +1,22 @@
 import Foundation
 import Combine
 
-@available(OSX 10.15, iOS 13.0, *)
-/// Provide characters, locations and episodes of RickAndMortyAPI
-public struct RickAndMortyAPI {
-    private let networking = Networking()
+protocol RickAndMortyAPIable {
+    func getCharacter() -> AnyPublisher<ResponseAPI<Character>, Error>
+    func getCharacter(id: String) -> AnyPublisher<Character, Error>
+    func getEpisode() -> AnyPublisher<ResponseAPI<Episode>, Error>
+    func getEpisode(id: String) -> AnyPublisher<Episode, Error>
+    func getLocation() -> AnyPublisher<ResponseAPI<Location>, Error>
+    func getLocation(id: String) -> AnyPublisher<Location, Error>
+}
 
-    public init() {}
+/// Provide characters, locations and episodes of RickAndMortyAPI
+public struct RickAndMortyAPI: RickAndMortyAPIable {
+    private let networking: Networkable
+
+    public init(networking: Networkable = Networking()) {
+        self.networking = networking
+    }
 
     /// Get the first 20 Characters
     public func getCharacter() -> AnyPublisher<ResponseAPI<Character>, Error> {

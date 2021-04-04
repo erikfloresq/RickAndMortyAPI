@@ -8,12 +8,18 @@
 import Foundation
 import Combine
 
-@available(OSX 10.15, iOS 13.0, *)
-struct Networking {
-    private let urlSession = URLSession.shared
+public protocol Networkable {
+    func getData<T: Codable>(from url: String) -> AnyPublisher<T, Error>
+}
 
-    func getData<T: Codable>(from url: String,
-            _ decoder: JSONDecoder = JSONDecoder()) -> AnyPublisher<T, Error>{
+public struct Networking: Networkable {
+    private let urlSession: URLSession
+
+    public init(urlSession: URLSession = .shared) {
+        self.urlSession = urlSession
+    }
+
+    public func getData<T: Codable>(from url: String) -> AnyPublisher<T, Error> {
         let url = URL(string: url)!
         let dataTask = urlSession.dataTaskPublisher(for: url)
         return dataTask
@@ -22,7 +28,7 @@ struct Networking {
                           httpResponse.statusCode == 200 else {
                             throw API.APIError.url
                           }
-                    return try decoder.decode(T.self, from: result.data)
+                    return try JSONDecoder().decode(T.self, from: result.data)
                 }
                 .receive(on: RunLoop.main)
                 .eraseToAnyPublisher()

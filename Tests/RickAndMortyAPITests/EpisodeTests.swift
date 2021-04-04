@@ -10,20 +10,46 @@ import Combine
 @testable import RickAndMortyAPI
 
 final class EpisodeTests: XCTestCase {
-    let rickAndMortyApi = RickAndMortyAPI()
+    var urlSession: URLSession!
+    var networking: Networking!
+    var rickAndMortyApi: RickAndMortyAPI!
+    
+    override func setUpWithError() throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MockURLProtocol.self]
+        urlSession = URLSession(configuration: configuration)
+        networking = Networking(urlSession: urlSession)
+        rickAndMortyApi = RickAndMortyAPI(networking: networking)
+    }
+    
+    func setRequest(forStub stub: String, withStatusCode statusCode: Int) {
+        MockURLProtocol.requestHandler = { request in
+            let url = URL(string: "https://rickandmorty.mock")!
+            let response = HTTPURLResponse(url: url, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
+            let charactersData = Utils().loadStub(from: stub)
+            return (response, charactersData)
+        }
+    }
+    
+    func testEpisodeURLWithID() {
+        let episodeURL = API.Endpoint.episode("1").url
+        XCTAssertEqual(episodeURL, "https://rickandmortyapi.com/api/episode/1")
+    }
+    
+    func testEpisodeURL() {
+        let episodeURL = API.Endpoint.episode("").url
+        XCTAssertEqual(episodeURL, "https://rickandmortyapi.com/api/episode/")
+    }
 
     func testEpisodes() {
+        setRequest(forStub: "Episodes", withStatusCode: 200)
+        
         let expectation = XCTestExpectation(description: "Episode result")
         let episodes = rickAndMortyApi
             .getEpisode()
             .map { $0.results }
-            .sink { completion in
-                switch completion {
-                    case .finished:
-                        expectation.fulfill()
-                    case .failure(let error):
-                        XCTFail(error.localizedDescription)
-                }
+            .sink { _ in
+                expectation.fulfill()
             } receiveValue: { episodes in
                 XCTAssertEqual(episodes.count, 20)
             }
@@ -31,22 +57,61 @@ final class EpisodeTests: XCTestCase {
         XCTAssertNotNil(episodes)
         wait(for: [expectation], timeout: 5.0)
     }
+    
+    func testEpisodesFailed() {
+        setRequest(forStub: "Episodes", withStatusCode: 500)
+        
+        let expectation = XCTestExpectation(description: "Episode result failed")
+        let episodes = rickAndMortyApi
+            .getEpisode()
+            .map { $0.results }
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                }
+                expectation.fulfill()
+            } receiveValue: { _ in }
+        
+        XCTAssertNotNil(episodes)
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
 
     func testSingleEpisode() {
+        setRequest(forStub: "Episode", withStatusCode: 200)
+        
         let expectation = XCTestExpectation(description: "Episode result")
         let episode = rickAndMortyApi
             .getEpisode(id: "1")
-            .sink { completion in
-                switch completion {
-                    case .finished:
-                        expectation.fulfill()
-                    case .failure(let error):
-                        XCTFail(error.localizedDescription)
-                }
+            .sink { _ in
+                expectation.fulfill()
             } receiveValue: { episode in
                 XCTAssertEqual(episode.id, 1)
             }
 
+        XCTAssertNotNil(episode)
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testSingleEpisodeFailed() {
+        setRequest(forStub: "Episode", withStatusCode: 500)
+        
+        let expectation = XCTestExpectation(description: "Episode result failed")
+        let episode = rickAndMortyApi
+            .getEpisode(id: "1")
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                }
+                expectation.fulfill()
+            } receiveValue: { _ in }
+        
         XCTAssertNotNil(episode)
         wait(for: [expectation], timeout: 5.0)
     }
