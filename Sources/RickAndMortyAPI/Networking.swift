@@ -13,9 +13,11 @@ public protocol Networkable {
 }
 
 public struct Networking: Networkable {
-    private let urlSession = URLSession.shared
+    private let urlSession: URLSession
 
-    public init() {}
+    public init(urlSession: URLSession = .shared) {
+        self.urlSession = urlSession
+    }
 
     public func getData<T: Codable>(from url: String) -> AnyPublisher<T, Error> {
         let url = URL(string: url)!

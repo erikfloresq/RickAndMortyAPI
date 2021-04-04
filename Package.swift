@@ -16,6 +16,9 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "RickAndMortyAPITests",
-            dependencies: ["RickAndMortyAPI"]),
+            dependencies: ["RickAndMortyAPI"],
+            resources: [
+                .process("Resources")
+            ]),
     ]
 )

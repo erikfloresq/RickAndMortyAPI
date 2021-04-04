@@ -8,8 +8,7 @@ import Foundation
 
 class Utils {
     func loadStub(from file: String) -> Data {
-        let bundle = Bundle(for: type(of: self))
-        guard let jsonFileURL = bundle.url(forResource: file, withExtension: "json") else {
+        guard let jsonFileURL = Bundle.module.url(forResource: file, withExtension: "json") else {
             fatalError("Problems with JSON URL")
         }
         do {
