@@ -17,34 +17,36 @@ public struct RickAndMortyAPI: RickAndMortyAPIable {
     public init(networking: Networkable = Networking()) {
         self.networking = networking
     }
+}
 
-    /// Get the first 20 Characters
-    public func getCharacter() -> AnyPublisher<ResponseAPI<Character>, Error> {
+public extension RickAndMortyAPI {
+    /// Get the first 20 Characters with publisher
+    func getCharacter() -> AnyPublisher<ResponseAPI<Character>, Error> {
         networking.getData(from: API.Endpoint.character("").url)
     }
 
-    /// Get a Character with id
-    public func getCharacter(id: String) -> AnyPublisher<Character, Error> {
+    /// Get a Character with id with publisher
+    func getCharacter(id: String) -> AnyPublisher<Character, Error> {
         networking.getData(from: API.Endpoint.character(id).url)
     }
 
-    /// Get the first 20 Episodes
-    public func getEpisode() -> AnyPublisher<ResponseAPI<Episode>, Error> {
+    /// Get the first 20 Episodes with publisher
+    func getEpisode() -> AnyPublisher<ResponseAPI<Episode>, Error> {
         networking.getData(from: API.Endpoint.episode("").url)
     }
 
-    /// Get a Episodes with id
-    public func getEpisode(id: String) -> AnyPublisher<Episode, Error> {
+    /// Get a Episodes with id with publisher
+    func getEpisode(id: String) -> AnyPublisher<Episode, Error> {
         networking.getData(from: API.Endpoint.episode(id).url)
     }
 
-    /// Get the first 20 Locations
-    public func getLocation() -> AnyPublisher<ResponseAPI<Location>, Error> {
+    /// Get the first 20 Locations with publisher
+    func getLocation() -> AnyPublisher<ResponseAPI<Location>, Error> {
         networking.getData(from: API.Endpoint.location("").url)
     }
 
-    /// Get a Location with id
-    public func getLocation(id: String) -> AnyPublisher<Location, Error> {
+    /// Get a Location with id with publisher
+    func getLocation(id: String) -> AnyPublisher<Location, Error> {
         networking.getData(from: API.Endpoint.location(id).url)
     }
 }
