@@ -8,17 +8,15 @@
 import Foundation
 import Combine
 
-public protocol Networkable {
-    func getData<T: Codable>(from url: String) -> AnyPublisher<T, Error>
-}
-
-public struct Networking: Networkable {
+public struct Networking {
     private let urlSession: URLSession
 
     public init(urlSession: URLSession = .shared) {
         self.urlSession = urlSession
     }
+}
 
+extension Networking {
     public func getData<T: Codable>(from url: String) -> AnyPublisher<T, Error> {
         let url = URL(string: url)!
         let dataTask = urlSession.dataTaskPublisher(for: url)
@@ -32,5 +30,19 @@ public struct Networking: Networkable {
                 }
                 .receive(on: RunLoop.main)
                 .eraseToAnyPublisher()
+    }
+}
+
+@available(iOS 15, *)
+extension Networking {
+    public func data<T: Codable>(from url: String) async throws -> T {
+        let url = URL(string: url)!
+        let (data, response) = try await urlSession.data(from: url)
+        guard let response = response as? HTTPURLResponse,
+              response.statusCode == 200 else {
+                  throw API.APIError.failureRequest
+        }
+        let decoder = JSONDecoder()
+        return try decoder.decode(T.self, from: data)
     }
 }

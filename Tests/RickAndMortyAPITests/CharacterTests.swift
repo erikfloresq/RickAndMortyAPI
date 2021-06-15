@@ -116,5 +116,13 @@ final class CharacterTests: XCTestCase {
         XCTAssertNotNil(character)
         wait(for: [expectation], timeout: 5.0)
     }
+
+    @available(iOS 15, *)
+    func testSingleCharacterAsync() async throws {
+        setRequest(forStub: "Character", withStatusCode: 200)
+
+        let character = try await rickAndMortyApi.getCharacter(id: "1")
+        XCTAssertEqual(character.name, "Rick Sanchez")
+    }
     
 }

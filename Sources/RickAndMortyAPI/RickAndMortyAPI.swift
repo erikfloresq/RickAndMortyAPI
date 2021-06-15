@@ -1,20 +1,11 @@
 import Foundation
 import Combine
 
-protocol RickAndMortyAPIable {
-    func getCharacter() -> AnyPublisher<ResponseAPI<Character>, Error>
-    func getCharacter(id: String) -> AnyPublisher<Character, Error>
-    func getEpisode() -> AnyPublisher<ResponseAPI<Episode>, Error>
-    func getEpisode(id: String) -> AnyPublisher<Episode, Error>
-    func getLocation() -> AnyPublisher<ResponseAPI<Location>, Error>
-    func getLocation(id: String) -> AnyPublisher<Location, Error>
-}
-
 /// Provide characters, locations and episodes of RickAndMortyAPI
-public struct RickAndMortyAPI: RickAndMortyAPIable {
-    private let networking: Networkable
+public struct RickAndMortyAPI {
+    private let networking: Networking
 
-    public init(networking: Networkable = Networking()) {
+    public init(networking: Networking = Networking()) {
         self.networking = networking
     }
 }
@@ -48,5 +39,38 @@ public extension RickAndMortyAPI {
     /// Get a Location with id with publisher
     func getLocation(id: String) -> AnyPublisher<Location, Error> {
         networking.getData(from: API.Endpoint.location(id).url)
+    }
+}
+
+@available(iOS 15, *)
+public extension RickAndMortyAPI {
+    /// Get the first 20 Characters with async/await
+    func getCharacter() async throws -> Character {
+        try await networking.data(from: API.Endpoint.character("").url)
+    }
+
+    /// Get a Character with id with async/await
+    func getCharacter(id: String) async throws -> Character {
+        try await networking.data(from: API.Endpoint.character(id).url)
+    }
+
+    /// Get the first 20 Episodes with async/await
+    func getEpisode()  async throws -> Episode {
+        try await networking.data(from: API.Endpoint.episode("").url)
+    }
+
+    /// Get a Episodes with id with async/await
+    func getEpisode(id: String) async throws -> Episode {
+        try await networking.data(from: API.Endpoint.episode(id).url)
+    }
+
+    /// Get the first 20 Locations with async/await
+    func getLocation() async throws -> Location {
+        try await networking.data(from: API.Endpoint.location("").url)
+    }
+
+    /// Get a Location with id with async/await
+    func getLocation(id: String) async throws -> Location {
+        try await networking.data(from: API.Endpoint.location(id).url)
     }
 }
