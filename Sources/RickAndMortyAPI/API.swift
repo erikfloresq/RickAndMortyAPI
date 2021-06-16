@@ -27,5 +27,6 @@ struct API {
     }
     enum APIError: Error {
         case url
+        case failureRequest
     }
 }

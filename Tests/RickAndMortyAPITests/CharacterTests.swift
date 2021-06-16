@@ -72,7 +72,7 @@ final class CharacterTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
@@ -108,7 +108,7 @@ final class CharacterTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
@@ -117,4 +117,48 @@ final class CharacterTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
     
+}
+
+@available(iOS 15, *)
+extension CharacterTests {
+
+    func testCharactersAsync() async {
+        setRequest(forStub: "Characters", withStatusCode: 200)
+        do {
+            let characters = try await rickAndMortyApi.getCharacter()
+            XCTAssertEqual(characters.results.count, 20)
+        } catch {
+            XCTFail("Expected charactes, but failed \(error)")
+        }
+
+    }
+
+    func testCharactersFailedAsync() async {
+        setRequest(forStub: "Characters", withStatusCode: 500)
+        do {
+            let _ = try await rickAndMortyApi.getCharacter()
+        } catch(let error) {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
+
+    func testSingleCharacterAsync() async {
+        setRequest(forStub: "Character", withStatusCode: 200)
+        do {
+            let character = try await rickAndMortyApi.getCharacter(id: "1")
+            XCTAssertEqual(character.name, "Rick Sanchez")
+        } catch {
+            XCTFail("Expected characte, but failed \(error)")
+        }
+    }
+
+    func testSingleCharacterFailedAsync() async {
+        setRequest(forStub: "Character", withStatusCode: 500)
+        do {
+            let _ = try await rickAndMortyApi.getCharacter(id: "1")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
+
 }
