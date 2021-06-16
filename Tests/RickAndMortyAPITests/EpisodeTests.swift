@@ -70,7 +70,7 @@ final class EpisodeTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
@@ -78,7 +78,6 @@ final class EpisodeTests: XCTestCase {
         XCTAssertNotNil(episodes)
         wait(for: [expectation], timeout: 5.0)
     }
-    
 
     func testSingleEpisode() {
         setRequest(forStub: "Episode", withStatusCode: 200)
@@ -107,7 +106,7 @@ final class EpisodeTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
@@ -116,4 +115,45 @@ final class EpisodeTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+}
+
+@available(iOS 15, *)
+extension EpisodeTests {
+    func testEpisodesAsync() async {
+        setRequest(forStub: "Episodes", withStatusCode: 200)
+        do {
+            let episodes = try await rickAndMortyApi.getEpisode()
+            XCTAssertEqual(episodes.results.count, 20)
+        } catch {
+            XCTFail("Expected episodes, but failed \(error)")
+        }
+    }
+
+    func testEpisodesFailedAsync() async {
+        setRequest(forStub: "Episodes", withStatusCode: 500)
+        do {
+            let _ = try await rickAndMortyApi.getEpisode()
+        } catch {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
+
+    func testSingleEpisodeAsync() async {
+        setRequest(forStub: "Episode", withStatusCode: 200)
+        do {
+            let episode = try await rickAndMortyApi.getEpisode(id: "1")
+            XCTAssertEqual(episode.id, 1)
+        } catch {
+            XCTFail("Expected episode, but failed \(error)")
+        }
+    }
+
+    func testSingleEpisodeFailedAsync() async {
+        setRequest(forStub: "Episode", withStatusCode: 500)
+        do {
+            let _ = try await rickAndMortyApi.getEpisode(id: "1")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
 }

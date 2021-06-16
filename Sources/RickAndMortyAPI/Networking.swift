@@ -24,7 +24,7 @@ extension Networking {
                 .tryMap { result -> T in
                     guard let httpResponse = result.response as? HTTPURLResponse,
                           httpResponse.statusCode == 200 else {
-                            throw API.APIError.url
+                            throw API.APIError.failureRequest
                           }
                     return try JSONDecoder().decode(T.self, from: result.data)
                 }

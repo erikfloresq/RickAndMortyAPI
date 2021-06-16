@@ -70,7 +70,7 @@ final class LocationTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
@@ -106,13 +106,60 @@ final class LocationTests: XCTestCase {
                 case .finished:
                     break
                 case .failure(let error):
-                    XCTAssertEqual(error.localizedDescription, API.APIError.url.localizedDescription)
+                    XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
                 }
                 expectation.fulfill()
             } receiveValue: { _ in }
         
         XCTAssertNotNil(location)
         wait(for: [expectation], timeout: 5.0)
+    }
+
+}
+
+@available(iOS 15, *)
+extension LocationTests {
+    func testLocationsAsync() async {
+        setRequest(forStub: "Locations", withStatusCode: 200)
+
+        do {
+            let locations = try await rickAndMortyApi.getLocation()
+            XCTAssertEqual(locations.results.count, 20)
+        } catch {
+            XCTFail("Expected episode, but failed \(error)")
+        }
+    }
+
+    func testLocationsFailedAsync() async {
+        setRequest(forStub: "Locations", withStatusCode: 500)
+
+        do {
+            let _ = try await rickAndMortyApi.getLocation()
+        } catch {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
+
+    func testSingleLocationAsync() async {
+        setRequest(forStub: "Location", withStatusCode: 200)
+
+        do {
+            let location = try await rickAndMortyApi.getLocation(id: "1")
+            XCTAssertEqual(location.id, 1)
+        } catch {
+            XCTFail("Expected episode, but failed \(error)")
+            //XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
+    }
+
+    func testSingleLocationFailedAsync() async {
+        setRequest(forStub: "Location", withStatusCode: 500)
+
+        do {
+            let _ = try await rickAndMortyApi.getLocation(id: "1")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, API.APIError.failureRequest.localizedDescription)
+        }
     }
 
 }

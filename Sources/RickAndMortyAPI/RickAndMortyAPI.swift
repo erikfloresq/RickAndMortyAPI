@@ -45,7 +45,7 @@ public extension RickAndMortyAPI {
 @available(iOS 15, *)
 public extension RickAndMortyAPI {
     /// Get the first 20 Characters with async/await
-    func getCharacter() async throws -> Character {
+    func getCharacter() async throws -> ResponseAPI<Character> {
         try await networking.data(from: API.Endpoint.character("").url)
     }
 
@@ -55,7 +55,7 @@ public extension RickAndMortyAPI {
     }
 
     /// Get the first 20 Episodes with async/await
-    func getEpisode()  async throws -> Episode {
+    func getEpisode()  async throws -> ResponseAPI<Episode> {
         try await networking.data(from: API.Endpoint.episode("").url)
     }
 
@@ -65,7 +65,7 @@ public extension RickAndMortyAPI {
     }
 
     /// Get the first 20 Locations with async/await
-    func getLocation() async throws -> Location {
+    func getLocation() async throws -> ResponseAPI<Location> {
         try await networking.data(from: API.Endpoint.location("").url)
     }
 
